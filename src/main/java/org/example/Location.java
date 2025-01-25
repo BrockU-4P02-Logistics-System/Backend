@@ -12,8 +12,8 @@ public class Location {
             throw new IllegalArgumentException("Latitude must be between -90 and 90.");
         }
 
-        if(lon < -90 || lon > 90) {
-            throw new IllegalArgumentException("Latitude must be between -90 and 90.");
+        if(lon < -180 || lon > 180) {
+            throw new IllegalArgumentException("longitude must be between -180 and 180.");
         }
         this.lat = lat;
         this.lon = lon;
@@ -30,7 +30,7 @@ public class Location {
         return this.lon;
     }
 
-    public double getID()
+    public int getID()
     {
         return this.id;
     }
