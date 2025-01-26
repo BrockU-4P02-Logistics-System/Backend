@@ -78,4 +78,62 @@ public class GeneticAlgorithm {
         }
         return score;
     }
+
+    List<Location> mutate(List<Location> input, double rate)
+    {
+        // This will mutate one route
+        Random r = new Random();
+        List<Location> m = new ArrayList<>(input);
+        int s = m.size();
+
+        if(r.nextDouble() < rate)
+        {
+            int i1 = r.nextInt(s);
+            int i2 = r.nextInt(s);
+
+            while(i1 == i2)
+            {
+                i2 = r.nextInt(m.size());
+            }
+
+            Collections.swap(m,i1,i2);
+        }
+        return m;
+    }
+
+    List<Location> orderedCrossover(List<Location> p1, List<Location> p2)
+    {
+        Random r = new Random();
+        int s = p1.size();
+
+        List<Location> child1 = new ArrayList<>(Collections.nCopies(s, null));
+
+        int i1 = r.nextInt(s);
+        int i2 = r.nextInt(s);
+
+        while(i1 == i2)
+        {
+            i2 = r.nextInt(s);
+        }
+
+        if (i1 > i2) {
+            int temp = i1;
+            i1 = i2;
+            i2 = temp;
+        }
+
+        for (int i = i1; i <= i2; i++) {
+            child1.set(i, p1.get(i));
+        }
+
+        int currentIndex = (i2 + 1) % s;
+        for (int i = 0; i < s; i++) {
+            Location temp = p2.get((i2 + 1 + i) % s);
+            if (!child1.contains(temp)) {
+                child1.set(currentIndex, temp);
+                currentIndex = (currentIndex + 1) % s;
+            }
+        }
+        return child1;
+    }
 }
