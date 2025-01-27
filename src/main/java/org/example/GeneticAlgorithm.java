@@ -11,13 +11,13 @@ import java.util.*;
 
 public class GeneticAlgorithm {
 
-    int stops;
     GraphHopper hopper;
     Map<String, Long> cache;
+    List<List<Location>> population;
+    double[] populationScore;
 
-    GeneticAlgorithm(int s)
+    GeneticAlgorithm(List<Location> Locations)
     {
-        this.stops = s;
         cache = new HashMap<>();
 
         hopper = new GraphHopper();
@@ -28,6 +28,10 @@ public class GeneticAlgorithm {
         hopper.getCHPreparationHandler().setCHProfiles(new CHProfile("car"));
 
         hopper.importOrLoad();
+
+        this.population = initialPopulation(Locations,Locations.size() * Locations.size());
+        this.populationScore = new double[Locations.size() * Locations.size()];
+        updateScore();
     }
 
     List<List<Location>> initialPopulation(List<Location> locations, int popSize)
@@ -48,23 +52,23 @@ public class GeneticAlgorithm {
     {
         double time = 0;
 
-        for(int i = 0; i < subject.size() - 1; i++)
+        for(int i = 0; i < subject.size(); i++)
         {
-            String key = subject.get(i).getID() + "-" + subject.get(i + 1).getID();
+            String key = subject.get(i).getID() + "-" + subject.get((i + 1) % subject.size()).getID();
 
             if(!cache.containsKey(key))
             {
-                GHRequest request = new GHRequest(subject.get(i).getLat(), subject.get(i).getLon(), subject.get(i+1).getLat(), subject.get(i+1).getLon()).setProfile("car").setLocale("en");
+                GHRequest request = new GHRequest(subject.get(i).getLat(), subject.get(i).getLon(), subject.get((i + 1) % subject.size()).getLat(), subject.get((i + 1) % subject.size()).getLon()).setProfile("car").setLocale("en");
 
                 GHResponse response = hopper.route(request);
 
                 ResponsePath path = response.getBest();
-                cache.put(key,path.getTime());
+                cache.put(key,path.getTime() / 60000);
             }
 
             time = time + cache.get(key);
         }
-        return 1 / time;
+        return time; //Smaller time will give better score
     }
 
     double[] evaluatePopulation(List<List<Location>> population)
@@ -135,5 +139,92 @@ public class GeneticAlgorithm {
             }
         }
         return child1;
+    }
+
+    List<List<Location>> getPopulation()
+    {
+        return this.population;
+    }
+
+    void printPopulation()
+    {
+        for(List<Location> element : this.population)
+        {
+            System.out.println(element);
+        }
+    }
+
+    void updateScore()
+    {
+        this.populationScore = evaluatePopulation(this.population);
+    }
+
+    int currBestRouteIndex()
+    {
+        double best = Double.POSITIVE_INFINITY;
+        int bestIn = 0;
+
+        for(int i = 0; i < populationScore.length; i++)
+        {
+            if(populationScore[i] < best)
+            {
+                bestIn = i;
+                best = populationScore[i];
+            }
+        }
+        return bestIn;
+    }
+
+    List<Location> currBestRoute()
+    {
+        return this.population.get(currBestRouteIndex());
+    }
+
+    double currBestScore()
+    {
+        return this.populationScore[currBestRouteIndex()];
+    }
+
+    List<Location> parentSelection(double[] fitnessScores)
+    {
+        double total = Arrays.stream(fitnessScores).sum();
+        double avg = total / fitnessScores.length;
+
+        Random r = new Random();
+
+        do
+        {
+            int index = r.nextInt(fitnessScores.length);
+
+            if(fitnessScores[index] <= avg)
+            {
+                return population.get(index);
+            }
+        } while (true);
+    }
+
+    public static void main(String [] args)
+    {
+        // Dummy data
+        Location one = new Location(43.651070,-79.347015,1); //Toronto
+        Location two = new Location(44.3894,-79.6903,2); //Barrie
+        Location three = new Location(45.421532,-75.697189,3); //Ottawa
+        Location four = new Location(43.1594,-79.2469,4); //St Catharines
+        Location five = new Location(43.2557,-79.8711,5); //Hamilton
+        Location six = new Location(43.7315,-79.7624,6); //Brampton
+        Location seven = new Location(48.3809,-89.2477,7); //Thunder Bay
+
+        List<Location> Locations = new ArrayList<>();
+        Locations.add(one);
+        Locations.add(two);
+        Locations.add(three);
+        Locations.add(four);
+        Locations.add(five);
+        Locations.add(six);
+        Locations.add(seven);
+
+        GeneticAlgorithm g = new GeneticAlgorithm(Locations);
+        g.printPopulation();
+        System.out.println(Arrays.toString(g.populationScore));
     }
 }
