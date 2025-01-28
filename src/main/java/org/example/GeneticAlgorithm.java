@@ -15,6 +15,10 @@ public class GeneticAlgorithm {
     Map<String, Long> cache;
     List<List<Location>> population;
     double[] populationScore;
+    double populationAverage;
+    int numberIterations;
+    double crossoverRate;
+    double mutationRate;
 
     GeneticAlgorithm(List<Location> Locations)
     {
@@ -31,7 +35,19 @@ public class GeneticAlgorithm {
 
         this.population = initialPopulation(Locations,Locations.size() * Locations.size());
         this.populationScore = new double[Locations.size() * Locations.size()];
+        this.numberIterations = 5;
+        this.mutationRate = 0.2;
+        this.crossoverRate = 0.75;
+
         updateScore();
+        for(int i = 0; i < this.numberIterations; i++)
+        {
+            for(int j = 0; j < this.population.size() * 0.1; j++)
+            {
+                replace();
+            }
+            System.out.println("Generation " + (i + 1) + ": Best Score = " + currBestScore());
+        }
     }
 
     List<List<Location>> initialPopulation(List<Location> locations, int popSize)
@@ -74,12 +90,15 @@ public class GeneticAlgorithm {
     double[] evaluatePopulation(List<List<Location>> population)
     {
         double[] score = new double[population.size()];
+        double sum = 0;
 
         for(int i = 0; i < population.size(); i++)
         {
             double d = fitness(population.get(i));
             score[i] = d;
+            sum = sum + d;
         }
+        this.populationAverage = sum / population.size();
         return score;
     }
 
@@ -185,22 +204,67 @@ public class GeneticAlgorithm {
         return this.populationScore[currBestRouteIndex()];
     }
 
-    List<Location> parentSelection(double[] fitnessScores)
+    List<Location> parentSelection()
     {
-        double total = Arrays.stream(fitnessScores).sum();
-        double avg = total / fitnessScores.length;
-
         Random r = new Random();
-
         do
         {
-            int index = r.nextInt(fitnessScores.length);
+            int index = r.nextInt(this.populationScore.length);
 
-            if(fitnessScores[index] <= avg)
+            if(this.populationScore[index] < this.populationAverage)
             {
                 return population.get(index);
             }
         } while (true);
+    }
+
+    int findWeakIndex()
+    {
+        Random r = new Random();
+        do
+        {
+            int index = r.nextInt(this.populationScore.length);
+
+            if(this.populationScore[index] > this.populationAverage)
+            {
+                return index;
+            }
+        } while (true);
+    }
+
+    void replace()
+    {
+        Random r = new Random();
+        List<Location> parent1 = parentSelection();
+        List<Location> parent2 = parentSelection();
+        List<Location> child;
+        do
+        {
+            if(parent1 != parent2)
+            {
+                break;
+            }
+        } while (true);
+
+        double gen = r.nextDouble();
+        if(gen < this.crossoverRate)
+        {
+            child = orderedCrossover(parent1,parent2);
+        }
+        else if(gen < (1 - this.crossoverRate) / 2)
+        {
+            child = parent1;
+        }
+        else
+        {
+            child = parent2;
+        }
+
+        child = mutate(child,this.mutationRate);
+        int weak = findWeakIndex();
+        this.population.set(weak,child);
+
+        updateScore();
     }
 
     public static void main(String [] args)
@@ -224,7 +288,5 @@ public class GeneticAlgorithm {
         Locations.add(seven);
 
         GeneticAlgorithm g = new GeneticAlgorithm(Locations);
-        g.printPopulation();
-        System.out.println(Arrays.toString(g.populationScore));
     }
 }
