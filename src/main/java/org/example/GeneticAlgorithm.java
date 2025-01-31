@@ -6,7 +6,6 @@ import com.graphhopper.GraphHopper;
 import com.graphhopper.ResponsePath;
 import com.graphhopper.config.CHProfile;
 import com.graphhopper.config.Profile;
-
 import java.util.*;
 
 public class GeneticAlgorithm {
@@ -35,7 +34,7 @@ public class GeneticAlgorithm {
 
         this.population = initialPopulation(Locations,Locations.size() * Locations.size());
         this.populationScore = new double[Locations.size() * Locations.size()];
-        this.numberIterations = 5;
+        this.numberIterations = 1000;
         this.mutationRate = 0.2;
         this.crossoverRate = 0.75;
 
@@ -207,15 +206,8 @@ public class GeneticAlgorithm {
     List<Location> parentSelection()
     {
         Random r = new Random();
-        do
-        {
-            int index = r.nextInt(this.populationScore.length);
-
-            if(this.populationScore[index] < this.populationAverage)
-            {
-                return population.get(index);
-            }
-        } while (true);
+        int ran = r.nextInt(this.population.size());
+        return this.population.get(ran);
     }
 
     int findWeakIndex()
@@ -225,7 +217,7 @@ public class GeneticAlgorithm {
         {
             int index = r.nextInt(this.populationScore.length);
 
-            if(this.populationScore[index] > this.populationAverage)
+            if(this.populationScore[index] >= this.populationAverage)
             {
                 return index;
             }
@@ -244,6 +236,10 @@ public class GeneticAlgorithm {
             {
                 break;
             }
+            else
+            {
+                parent2 = parentSelection();
+            }
         } while (true);
 
         double gen = r.nextDouble();
@@ -261,8 +257,9 @@ public class GeneticAlgorithm {
         }
 
         child = mutate(child,this.mutationRate);
-        int weak = findWeakIndex();
-        this.population.set(weak,child);
+        int ran = r.nextInt(this.population.size());
+
+        this.population.set(ran,child);
 
         updateScore();
     }
