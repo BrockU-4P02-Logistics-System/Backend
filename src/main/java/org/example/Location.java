@@ -6,7 +6,8 @@ public class Location {
     private double lon;
     int id;
 
-    Location(double lat, double lon, int id)
+
+    public Location(double lat, double lon, int id)
     {
         if(lat < -90 || lat > 90) {
             throw new IllegalArgumentException("Latitude must be between -90 and 90.");
