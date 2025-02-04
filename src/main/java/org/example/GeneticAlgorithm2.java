@@ -39,6 +39,48 @@ public class GeneticAlgorithm2 {
         return newPop;
     }
 
+    public Individual tournamentProbability(int k, double probability)
+    {
+        List<Individual> tournament = new ArrayList<>();
+        Random r = new Random();
+
+        for(int i = 0; i < k; i++)
+        {
+            while(true)
+            {
+                int s = r.nextInt(this.populationSize);
+                if(!tournament.contains(this.population.get(s)))
+                {
+                    tournament.add(this.population.get(s));
+                    break;
+                }
+            }
+        }
+
+        tournament = order(tournament);
+
+        double role = r.nextDouble();
+        double cumulative = probability;
+        for(int i = 0; i < tournament.size(); i++)
+        {
+            if(role < cumulative)
+            {
+                return tournament.get(i);
+            }
+            else
+            {
+                cumulative += probability * Math.pow((1 - probability), i + 1);
+            }
+        }
+        return tournament.getFirst();
+    }
+
+    List<Individual> order(List<Individual> unordered)
+    {
+        unordered.sort(Comparator.comparingDouble(Individual::getFitness).reversed());
+        return unordered;
+    }
+
     public Individual tournament(int k, List<Individual> oldPop){
         List<Individual> tournament = new ArrayList<>(k);
         for (int i=0; i<k; i++){
