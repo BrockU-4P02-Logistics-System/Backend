@@ -35,7 +35,7 @@ public class GeneticAlgorithm2 {
     public List<Individual> tournamentSelection(int k){
         List<Individual> newPop = new ArrayList<>(populationSize);
         for (int i=0; i<populationSize; i++){
-            newPop.add(tournament(k, population));
+            newPop.add(tournamentProbability(k, 0.9));
         }
         return newPop;
     }
@@ -78,15 +78,15 @@ public class GeneticAlgorithm2 {
 
     List<Individual> order(List<Individual> unordered)
     {
-        unordered.sort(Comparator.comparingDouble(Individual::getFitness).reversed());
+        unordered.sort(Comparator.comparingDouble(Individual::getFitness));
         return unordered;
     }
 
-    public Individual tournament(int k, List<Individual> oldPop){
+    public Individual tournament(int k){
         List<Individual> tournament = new ArrayList<>(k);
         for (int i=0; i<k; i++){
-            int index = (int) (this.randomGen.nextDouble() * oldPop.size());
-            tournament.add(oldPop.get(index));
+            int index = (int) (this.randomGen.nextDouble() * this.population.size());
+            tournament.add(this.population.get(index));
         }
         return Collections.min(tournament, Comparator.comparingDouble(Individual::getFitness));
     }
