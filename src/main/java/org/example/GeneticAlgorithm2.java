@@ -20,6 +20,7 @@ public class GeneticAlgorithm2 {
     Random randomGen;
     List<Location> locations;
     int populationSize;
+    Individual bestIndividual;
 
     public List<Individual> initializePopulation(int size){
         List<Individual> pop = new ArrayList<>(size);
@@ -42,7 +43,7 @@ public class GeneticAlgorithm2 {
     public Individual tournamentProbability(int k, double probability)
     {
         List<Individual> tournament = new ArrayList<>();
-        Random r = new Random();
+        Random r = this.randomGen;
 
         for(int i = 0; i < k; i++)
         {
@@ -160,6 +161,9 @@ public class GeneticAlgorithm2 {
             if (population.get(i).getFitness() < min){
                 min = population.get(i).getFitness();
             }
+            if (bestIndividual == null || population.get(i).getFitness() < bestIndividual.getFitness()) {
+                bestIndividual = population.get(i);
+            }
         }
         this.populationMin.add(min);
         this.populationAverage.add(total/populationSize);
@@ -187,7 +191,7 @@ public class GeneticAlgorithm2 {
         return new Individual(newRoute);
     }
 
-    public void mainLoop(){
+    public Individual mainLoop(){
         this.population = initializePopulation(this.populationSize);
         for (int i=0; i<numberIterations; i++){
             evaluatePopulation();
@@ -198,6 +202,7 @@ public class GeneticAlgorithm2 {
         }
         evaluatePopulation();
         System.out.println("Iteration: " + numberIterations + " Min: " + this.populationMin.get(numberIterations) + " Average: " + this.populationAverage.get(numberIterations));
+        return this.bestIndividual;
     }
 
     public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int seed, List<Location> locations){
@@ -219,6 +224,7 @@ public class GeneticAlgorithm2 {
         this.locations = locations;
         this.populationMin = new ArrayList<>(numberIterations+1);
         this.populationAverage = new ArrayList<>(numberIterations+1);
+        this.bestIndividual = null;
     }
 
 }
