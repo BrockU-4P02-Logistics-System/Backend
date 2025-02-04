@@ -41,4 +41,8 @@ public class Individual {
     public double getFitness(){
         return this.fitness;
     }
+
+    public List<Location> getRoute(){
+        return this.route;
+    }
 }

@@ -53,4 +53,8 @@ public class Route {
         }
     }
 
+    public List<Location> getRoute(){
+        return this.finalRoute;
+    }
+
 }
