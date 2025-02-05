@@ -13,7 +13,7 @@ public class Route {
 
     List<Location> finalRoute;
 
-    Route(List<Location> route) throws IOException {
+    Route(List<Location> route, String filePath) throws IOException {
         this.finalRoute = route;
 
         JSONObject geoJson = new JSONObject();
@@ -21,18 +21,18 @@ public class Route {
 
         JSONArray features = new JSONArray();
 
-        for(int i = 0; i < this.finalRoute.size(); i++)
-        {
+        for (Location location : this.finalRoute) {
 
             double[] coord = new double[2];
-            coord[0] = this.finalRoute.get(i).getLat();
-            coord[1] = this.finalRoute.get(i).getLon();
+            coord[0] = location.getLat();
+            coord[1] = location.getLon();
 
             JSONObject feature = new JSONObject();
             feature.put("type", "Feature");
 
             JSONObject geometry = new JSONObject();
             geometry.put("type", "Point");
+            geometry.put("ID", location.id);
             geometry.put("coordinates", new JSONArray(coord));
 
             feature.put("geometry", geometry);
@@ -43,9 +43,10 @@ public class Route {
 
         try
         {
-            File file = new File("src/main/java/org/example/output.txt");
+            File file = new File(filePath);
             FileWriter fw = new FileWriter(file);
             fw.write(geoJson.toString(4));
+            fw.close();
         }
         catch(IOException e)
         {
@@ -56,5 +57,4 @@ public class Route {
     public List<Location> getRoute(){
         return this.finalRoute;
     }
-
 }
