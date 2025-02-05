@@ -24,7 +24,7 @@ public class GAHarness {
         Locations.add(six);
         Locations.add(seven);
 
-        GeneticAlgorithm2 ga = new GeneticAlgorithm2(1000, 0.75, 0.2, 3, Locations.size() * Locations.size(), 42, Locations);
+        GeneticAlgorithm2 ga = new GeneticAlgorithm2(1000, 0.75, 0.2, 3, Locations.size() * Locations.size(), 3, 42, Locations);
         Individual bestIndividual = ga.mainLoop();
         System.out.println("done");
     }
