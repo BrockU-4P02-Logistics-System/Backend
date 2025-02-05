@@ -31,7 +31,7 @@ public class Individual {
                 req.setProfile("car");
                 GHResponse res = hopper.route(req);
                 ResponsePath path = res.getBest();
-                time += path.getTime();
+                time += path.getTime() / 60000;
                 cache.put(key, path.getTime() / 60000);
             }
         }

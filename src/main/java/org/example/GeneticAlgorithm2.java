@@ -3,9 +3,15 @@ package org.example;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.config.CHProfile;
 import com.graphhopper.config.Profile;
+import org.knowm.xchart.*;
+import org.knowm.xchart.style.markers.SeriesMarkers;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class GeneticAlgorithm2 {
     GraphHopper hopper;
@@ -21,6 +27,8 @@ public class GeneticAlgorithm2 {
     List<Location> locations;
     int populationSize;
     Individual bestIndividual;
+    double selectionPressure = 0.9;
+    int[] generation;
 
     public List<Individual> initializePopulation(int size){
         List<Individual> pop = new ArrayList<>(size);
@@ -35,7 +43,7 @@ public class GeneticAlgorithm2 {
     public List<Individual> tournamentSelection(int k){
         List<Individual> newPop = new ArrayList<>(populationSize);
         for (int i=0; i<populationSize; i++){
-            newPop.add(tournamentProbability(k, 0.9));
+            newPop.add(tournamentProbability(k, this.selectionPressure));
         }
         return newPop;
     }
@@ -73,7 +81,7 @@ public class GeneticAlgorithm2 {
                 cumulative += probability * Math.pow((1 - probability), i + 1);
             }
         }
-        return tournament.getFirst();
+        return tournament.get(0);
     }
 
     List<Individual> order(List<Individual> unordered)
@@ -193,7 +201,9 @@ public class GeneticAlgorithm2 {
 
     public Individual mainLoop(){
         this.population = initializePopulation(this.populationSize);
+        generation[0] = 0;
         for (int i=0; i<numberIterations; i++){
+            generation[i+1] = i+1;
             evaluatePopulation();
             System.out.println("Iteration: " + i + " Min: " + this.populationMin.get(i) + " Average: " + this.populationAverage.get(i));
             this.population = tournamentSelection(this.tournamentSize);
@@ -202,6 +212,38 @@ public class GeneticAlgorithm2 {
         }
         evaluatePopulation();
         System.out.println("Iteration: " + numberIterations + " Min: " + this.populationMin.get(numberIterations) + " Average: " + this.populationAverage.get(numberIterations));
+
+        XYChart avgChart = new XYChartBuilder().width(800).height(300)
+                .title("GA Average Fitness Over Generations")
+                .xAxisTitle("Generation")
+                .yAxisTitle("Average Fitness")
+                .build();
+
+        // Add fitness progression line
+        XYSeries series = avgChart.addSeries("Average Fitness", Arrays.stream(this.generation).boxed().collect(Collectors.toList()), this.populationAverage);
+        series.setMarker(SeriesMarkers.CIRCLE);  // Set point markers
+
+        XYChart bestChart = new XYChartBuilder().width(800).height(300)  // Smaller height
+                .title("GA Best Fitness Over Generations")
+                .xAxisTitle("Generation")
+                .yAxisTitle("Best Fitness")
+                .build();
+        XYSeries bestSeries = bestChart.addSeries("Best Fitness", Arrays.stream(this.generation).boxed().collect(Collectors.toList()), this.populationMin);
+        bestSeries.setMarker(SeriesMarkers.CIRCLE);
+
+        // === Display Both Charts in a Panel ===
+        JPanel panel = new JPanel();
+        panel.setLayout(new GridLayout(2, 1));  // 2 Rows, 1 Column
+        panel.add(new XChartPanel<>(avgChart));  // Top Chart
+        panel.add(new XChartPanel<>(bestChart)); // Bottom Chart
+
+        // === Create Frame ===
+        JFrame frame = new JFrame("GA Fitness Visualization");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(panel);
+        frame.pack();
+        frame.setVisible(true);
+
         return this.bestIndividual;
     }
 
@@ -225,6 +267,7 @@ public class GeneticAlgorithm2 {
         this.populationMin = new ArrayList<>(numberIterations+1);
         this.populationAverage = new ArrayList<>(numberIterations+1);
         this.bestIndividual = null;
+        generation = new int[numberIterations+1];
     }
 
 }
