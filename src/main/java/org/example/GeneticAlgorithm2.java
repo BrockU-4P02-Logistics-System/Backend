@@ -29,6 +29,8 @@ public class GeneticAlgorithm2 {
     Individual bestIndividual;
     double selectionPressure = 0.9;
     int[] generation;
+    Individual[] elite;
+    int eliteSize;
 
     public List<Individual> initializePopulation(int size){
         List<Individual> pop = new ArrayList<>(size);
@@ -175,6 +177,14 @@ public class GeneticAlgorithm2 {
         }
         this.populationMin.add(min);
         this.populationAverage.add(total/populationSize);
+        if (this.elite == null) this.elite = new Individual[eliteSize];
+        //Get elites
+        Individual[] temp = new Individual[populationSize];
+        for (int i=0; i<populationSize; i++){
+            temp[i] = population.get(i);
+        }
+        Arrays.sort(temp, Comparator.comparingDouble(Individual::getFitness));
+        if (eliteSize >= 0) System.arraycopy(temp, 0, this.elite, 0, eliteSize);
     }
 
     public List<Individual> mutatePopulation(List<Individual> population){
@@ -204,6 +214,7 @@ public class GeneticAlgorithm2 {
         generation[0] = 0;
         for (int i=0; i<numberIterations; i++){
             generation[i+1] = i+1;
+            if (elite!= null) this.population = addElite(this.population, elite);
             evaluatePopulation();
             System.out.println("Iteration: " + i + " Min: " + this.populationMin.get(i) + " Average: " + this.populationAverage.get(i));
             this.population = tournamentSelection(this.tournamentSize);
@@ -247,7 +258,27 @@ public class GeneticAlgorithm2 {
         return this.bestIndividual;
     }
 
-    public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int seed, List<Location> locations){
+    public List<Individual> addElite(List<Individual> population, Individual[] elite){
+        List<Individual> newPop = new ArrayList<>(populationSize);
+        Set<Integer> indices = new HashSet<>();
+        Random r = this.randomGen;
+        while (indices.size() < elite.length){
+            indices.add(r.nextInt(populationSize));
+        }
+        int i = 0;
+        for (int j=0; j<populationSize; j++){
+            if (indices.contains(j)){
+                newPop.add(elite[i]);
+                i++;
+            }
+            else{
+                newPop.add(population.get(j));
+            }
+        }
+        return newPop;
+    }
+
+    public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int eliteSize, int seed, List<Location> locations){
         this.cache = new ConcurrentHashMap<>();
 
         hopper = new GraphHopper();
@@ -268,6 +299,8 @@ public class GeneticAlgorithm2 {
         this.populationAverage = new ArrayList<>(numberIterations+1);
         this.bestIndividual = null;
         generation = new int[numberIterations+1];
+        this.eliteSize = eliteSize;
+        this.elite = null;
     }
 
 }
