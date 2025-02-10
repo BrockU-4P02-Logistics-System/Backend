@@ -1,5 +1,6 @@
 package org.example;
 
+import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonIntegerFormatVisitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,8 +29,10 @@ public class Reader {
             {
                 JSONObject feature = features.getJSONObject(i);
 
+                JSONObject properties = feature.getJSONObject("properties");
                 JSONObject geometry = feature.getJSONObject("geometry");
                 String type = geometry.getString("type");
+                int id = properties.getInt("id");
 
                 if ("Point".equalsIgnoreCase(type))
                 {
@@ -38,10 +41,6 @@ public class Reader {
                     // GeoJSON standard: coordinates are in [longitude, latitude] order
                     double lon = coordinates.getDouble(0);
                     double lat = coordinates.getDouble(1);
-
-                    // Option: retrieve an id from properties or simply use the loop index as id
-                    // For this example, we will use the loop index as the id.
-                    int id = i;
 
                     // Create a new Location object with the parsed lat, lon, and id
                     Location location = new Location(lat, lon, id);
