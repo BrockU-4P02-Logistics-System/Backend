@@ -33,6 +33,7 @@ public class Route {
             JSONObject geometry = new JSONObject();
             geometry.put("type", "Point");
             geometry.put("ID", location.id);
+            geometry.put("Driver-ID",location.clusterid);
             geometry.put("coordinates", new JSONArray(coord));
 
             feature.put("geometry", geometry);

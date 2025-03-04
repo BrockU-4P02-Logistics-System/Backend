@@ -5,6 +5,7 @@ public class Location {
     private double lat;
     private double lon;
     int id;
+    int clusterid;
 
 
     public Location(double lat, double lon, int id)
@@ -35,6 +36,10 @@ public class Location {
     {
         return this.id;
     }
+
+    public int getClusterid() {return this.clusterid;}
+
+    public void setCluster(int clusterid1) {this.clusterid = clusterid1;}
 
     @Override
     public String toString()
