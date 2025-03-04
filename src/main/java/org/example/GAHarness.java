@@ -1,11 +1,12 @@
 package org.example;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GAHarness {
-    public static void main(String[] args) {
-
+    public static void main(String[] args) throws IOException {
+        System.out.println("hello");
         List<Location> locations = new ArrayList<>();
 
         locations.add(new Location(43.642567, -79.387054, 1)); // CN Tower
@@ -58,7 +59,11 @@ public class GAHarness {
         locations.add(new Location(43.676389, -79.287500, 48)); // R.C. Harris Water Treatment Plant
 
 
-        GeneticAlgorithm2 ga = new GeneticAlgorithm2(1000, 0.75, 0.2, 3, locations.size() * locations.size(), 3, 42, locations);
+        Reader newReader = new Reader("src/main/java/org/example/input.txt");
+        System.out.println("hello");
+        GeneticAlgorithm2 ga = new GeneticAlgorithm2(1000, 0.75, 0.2, 3, locations.size() * locations.size(), 3, 42, newReader.locations);
         Individual bestIndividual = ga.mainLoop();
+        Route r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt");
+        //ga.printPopulation();
     }
 }

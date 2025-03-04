@@ -35,11 +35,29 @@ public class GeneticAlgorithm2 {
     public List<Individual> initializePopulation(int size){
         List<Individual> pop = new ArrayList<>(size);
         for (int i=0; i<size; i++){
+            int index = 0;
             List<Location> route = new ArrayList<>(this.locations);
             Collections.shuffle(route, this.randomGen);
+            if(route.get(0).getID() != 1)
+            {
+                index = findIDOne(route);
+            }
+            Collections.swap(route,0,index);
             pop.add(new Individual(route));
         }
         return pop;
+    }
+
+    int findIDOne(List<Location> route)
+    {
+        for(int i = 0; i < route.size(); i++)
+        {
+            if (route.get(i).getID() == 1)
+            {
+                return i;
+            }
+        }
+        return 0;
     }
 
     public List<Individual> tournamentSelection(int k){
@@ -125,43 +143,56 @@ public class GeneticAlgorithm2 {
         return newPop;
     }
 
-    public Individual crossover(Individual parent1, Individual parent2){
+    public Individual crossover(Individual parent1, Individual parent2) {
         int s = parent1.route.size();
 
+        // Create a child list pre-filled with nulls.
         List<Location> child1 = new ArrayList<>(Collections.nCopies(s, null));
-        Set<Location> used = new HashSet<>(); // Track used locations
+        Set<Location> used = new HashSet<>(); // Track locations already added
 
-        // Ensure distinct crossover points
-        int i1 = this.randomGen.nextInt(s);
-        int i2 = this.randomGen.nextInt(s);
+        // Fix index 0: copy it from parent1 (and mark it as used)
+        child1.set(0, parent1.route.get(0));
+        used.add(parent1.route.get(0));
 
+        // Choose crossover points in the range [1, s-1] so index 0 is not selected.
+        int i1 = this.randomGen.nextInt(s - 1) + 1;
+        int i2 = this.randomGen.nextInt(s - 1) + 1;
         while (i1 == i2) {
-            i2 = this.randomGen.nextInt(s);
+            i2 = this.randomGen.nextInt(s - 1) + 1;
         }
-
         if (i1 > i2) {
             int temp = i1;
             i1 = i2;
             i2 = temp;
         }
 
-        // Copy slice from parent 1
+        // Copy the slice from parent1 (from i1 to i2) into the child.
         for (int i = i1; i <= i2; i++) {
-            child1.set(i, parent1.route.get(i));
-            used.add(parent1.route.get(i));
+            Location loc = parent1.route.get(i);
+            child1.set(i, loc);
+            used.add(loc);
         }
 
-        // Fill remaining spots from parent 2
-        int currentIndex = (i2 + 1) % s;
-        for (Location temp : parent2.route) {
-            if (!used.contains(temp)) {
-                child1.set(currentIndex, temp);
-                used.add(temp);
-                currentIndex = (currentIndex + 1) % s;
+        // Fill the remaining positions with locations from parent2 in order.
+        // We fill only indices 1 to s-1. We start from index (i2 + 1) but ensure we skip index 0.
+        int currentIndex = i2 + 1;
+        if (currentIndex >= s) {
+            currentIndex = 1;
+        }
+        for (Location loc : parent2.route) {
+            if (!used.contains(loc)) {
+                child1.set(currentIndex, loc);
+                used.add(loc);
+                currentIndex++;
+                // Wrap around while ensuring index 0 is skipped.
+                if (currentIndex >= s) {
+                    currentIndex = 1;
+                }
             }
         }
         return new Individual(child1);
     }
+
 
     public void evaluatePopulation(){
         double total = 0;
@@ -199,10 +230,10 @@ public class GeneticAlgorithm2 {
         List<Location> newRoute = new ArrayList<>(individual.route);
         int s = newRoute.size();
         if (this.randomGen.nextDouble() < this.mutationRate){
-            int i1 = this.randomGen.nextInt(s);
-            int i2 = this.randomGen.nextInt(s);
+            int i1 = this.randomGen.nextInt(s - 1) + 1;
+            int i2 = this.randomGen.nextInt(s - 1) + 1;
             while (i1 == i2){
-                i2 = this.randomGen.nextInt(s);
+                i2 = this.randomGen.nextInt(s - 1) + 1;
             }
             Collections.swap(newRoute, i1, i2);
         }
@@ -276,6 +307,14 @@ public class GeneticAlgorithm2 {
             }
         }
         return newPop;
+    }
+
+    void printPopulation()
+    {
+        for(int i = 0; i < this.population.size(); i++)
+        {
+            System.out.println(this.population.get(i).route);
+        }
     }
 
     public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int eliteSize, int seed, List<Location> locations){
