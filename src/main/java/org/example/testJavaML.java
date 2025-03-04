@@ -7,7 +7,6 @@ import net.sf.javaml.core.DefaultDataset;
 import net.sf.javaml.core.Instance;
 import net.sf.javaml.core.DenseInstance;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,6 +42,10 @@ public class testJavaML {
             System.out.println();
         }
 
-        return new ClusteringResultWrapper(clusterAssignments, distances.cache);
+        for (Location l : locations){
+            l.setCluster(clusterAssignments.get(l.getID()));
+        }
+
+        return new ClusteringResultWrapper(locations, distances.cache);
     }
 }

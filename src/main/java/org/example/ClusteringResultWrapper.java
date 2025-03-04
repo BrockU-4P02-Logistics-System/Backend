@@ -1,18 +1,19 @@
 package org.example;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ClusteringResultWrapper {
     ConcurrentHashMap<String, Long> cache;
-    Map<Integer, Integer> clusterAssignments;
-    public ClusteringResultWrapper(Map<Integer, Integer> clusterAssignments, ConcurrentHashMap<String, Long> distanceCache) {
-        this.clusterAssignments = clusterAssignments;
+    List<Location> locations;
+    public ClusteringResultWrapper(List<Location> locations, ConcurrentHashMap<String, Long> distanceCache) {
+        this.locations = locations;
         this.cache = distanceCache;
     }
 
-    public Map<Integer, Integer> getClusterAssignments() {
-        return clusterAssignments;
+    public List<Location> getLocations() {
+        return locations;
     }
 
     public ConcurrentHashMap<String, Long> getDistanceCache() {
