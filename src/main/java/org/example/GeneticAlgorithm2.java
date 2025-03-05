@@ -31,6 +31,7 @@ public class GeneticAlgorithm2 {
     int[] generation;
     Individual[] elite;
     int eliteSize;
+    int numberDrivers;
 
     public List<Individual> initializePopulation(int size){
         List<Individual> pop = new ArrayList<>(size);
@@ -255,6 +256,13 @@ public class GeneticAlgorithm2 {
         evaluatePopulation();
         System.out.println("Iteration: " + numberIterations + " Min: " + this.populationMin.get(numberIterations) + " Average: " + this.populationAverage.get(numberIterations));
 
+        //graphing();
+
+        return this.bestIndividual;
+    }
+
+    public void graphing()
+    {
         XYChart avgChart = new XYChartBuilder().width(800).height(300)
                 .title("GA Average Fitness Over Generations")
                 .xAxisTitle("Generation")
@@ -285,8 +293,6 @@ public class GeneticAlgorithm2 {
         frame.add(panel);
         frame.pack();
         frame.setVisible(true);
-
-        return this.bestIndividual;
     }
 
     public List<Individual> addElite(List<Individual> population, Individual[] elite){
