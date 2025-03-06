@@ -11,6 +11,7 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.ortools:ortools-java:9.12.4544")
     implementation("net.sourceforge:javaml:0.1.7")
     implementation(group = "com.graphhopper", name = "graphhopper-core", version = "7.0")
     implementation(group = "com.graphhopper", name = "graphhopper-reader-osm", version = "3.0-pre3")
