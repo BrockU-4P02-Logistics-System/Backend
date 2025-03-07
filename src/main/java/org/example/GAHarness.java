@@ -23,8 +23,8 @@ public class GAHarness {
         hopper.getCHPreparationHandler().setCHProfiles(new CHProfile("car"));
         hopper.importOrLoad();
 
-        testJavaML ml = new testJavaML();
-        ml.cluster(numberDrivers,10000,newReader.locations,hopper);
+        //testJavaML ml = new testJavaML();
+        //ml.cluster(numberDrivers,10000,newReader.locations,hopper);
         for(int i = 0; i < numberDrivers; i++)
         {
             List<Location> clusteriLocations = new ArrayList<>();
