@@ -4,9 +4,6 @@ import com.graphhopper.GHRequest;
 import com.graphhopper.GHResponse;
 import com.graphhopper.GraphHopper;
 import com.graphhopper.ResponsePath;
-import net.sf.javaml.distance.DistanceMeasure;
-import net.sf.javaml.core.Instance;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 
 public class PrecomputedDistance {
@@ -17,11 +14,8 @@ public class PrecomputedDistance {
         this.distanceMatrix = new int[n][n];
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
-                if (i == j) {
-                    distanceMatrix[i][j] = 0;
-                    continue;
-                }
-                distanceMatrix[i][j] = computeDistance(locations.get(i), locations.get(j), hopper);
+                if (i == j) distanceMatrix[i][j] = 0;
+                else distanceMatrix[i][j] = computeDistance(locations.get(i), locations.get(j), hopper);
             }
         }
     }

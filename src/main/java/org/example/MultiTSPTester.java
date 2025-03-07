@@ -81,6 +81,8 @@ public class MultiTSPTester {
         locations.add(new Location(44.370912, -79.671345, 41)); // Amelia Street
 
         MultiTSPTester tester = new MultiTSPTester(2, locations);
+        long startTime = System.currentTimeMillis();
         tester.solveRoutingProblem(20);
+        System.out.println(System.currentTimeMillis() - startTime + " ms");
     }
 }

@@ -67,24 +67,18 @@ public class VehicleRouter {
             for (int i = 0; i < num_vehicles; i++) {
                 System.out.print("Route for Vehicle " + (i) + ": ");
                 long index = routing.start(i);
-                String route = "";
-                long routeDistance = 0;
-
+                StringBuilder route = new StringBuilder();
                 while (!routing.isEnd(index)) {
                     int routeIndex = manager.indexToNode((int) index);
-                    route += routeIndex+1+ " -> ";//manager.indexToNode((int) index) + " -> ";
-                    long previousIndex = index;
+                    route.append(routeIndex+1).append(" -> ");
                     index = solution.value(routing.nextVar(index));
-                    routeDistance += routing.getArcCostForVehicle(previousIndex, index, i);
                 }
                 int finalIndex = manager.indexToNode((int) index);
-                route += finalIndex+1;
+                route.append(finalIndex + 1);
                 System.out.println(route);
-                System.out.println("Distance of route: " + routeDistance);
             }
-
-            System.out.println("Total Distance of all routes: " + solution.objectiveValue());
-        } else {
+        }
+        else {
             System.out.println("No solution found!");
         }
     }
