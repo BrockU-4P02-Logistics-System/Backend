@@ -14,6 +14,8 @@ import java.util.List;
 public class Reader {
 
     public List<Location> locations;
+    public int numberDrivers;
+    public boolean returnToStart;
 
     public Reader(String filePath) throws IOException
     {
@@ -23,6 +25,10 @@ public class Reader {
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
 
             JSONObject geoJson = new JSONObject(content);
+
+            this.numberDrivers = geoJson.optInt("total_drivers", 1); // Default to 0 if missing
+            this.returnToStart = geoJson.optBoolean("return_to_start", true); // Default to false
+
             JSONArray features = geoJson.getJSONArray("features");
 
             for(int i = 0; i < features.length(); i++)
@@ -47,6 +53,8 @@ public class Reader {
                     this.locations.add(location);
                 }
             }
+
+            System.out.println(this.numberDrivers);
         }
         catch (IOException e)
         {
