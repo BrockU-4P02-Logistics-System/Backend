@@ -21,7 +21,7 @@ public class VehicleRouter {
     public void solveTSP(int timeLimit) {
         Loader.loadNativeLibraries(); // Load OR-Tools
         int numLocations = distanceMatrix.length;
-        System.out.println("Solving for " + numLocations + " locations with " + num_vehicles + " vehicles");
+        //System.out.println("Solving for " + numLocations + " locations with " + num_vehicles + " vehicles");
 
         // Create routing index manager
         // For a multiple vehicle routing problem with a depot
