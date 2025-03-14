@@ -6,14 +6,14 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 public class Route {
 
     List<Location> finalRoute;
 
-    Route(List<Location> route, String filePath) throws IOException {
+    Route(List<Location> route, String filePath) throws IOException
+    {
         this.finalRoute = route;
 
         JSONObject geoJson = new JSONObject();
@@ -21,41 +21,44 @@ public class Route {
 
         JSONArray features = new JSONArray();
 
-        for (Location location : this.finalRoute) {
-
-            double[] coord = new double[2];
-            coord[0] = location.getLat();
-            coord[1] = location.getLon();
-
+        for (Location location : this.finalRoute)
+        {
             JSONObject feature = new JSONObject();
             feature.put("type", "Feature");
 
+            // Correcting coordinate order (GeoJSON: [lon, lat])
+            JSONArray coordinates = new JSONArray();
+            coordinates.put(location.getLon()); // Longitude first
+            coordinates.put(location.getLat()); // Latitude second
+
             JSONObject geometry = new JSONObject();
             geometry.put("type", "Point");
-            geometry.put("ID", location.id);
-            geometry.put("Driver-ID",location.clusterid);
-            geometry.put("coordinates", new JSONArray(coord));
+            geometry.put("coordinates", coordinates);
+
+            // Moving metadata to properties
+            JSONObject properties = new JSONObject();
+            properties.put("Driver-ID", location.clusterid);
+            properties.put("ID", location.id);
 
             feature.put("geometry", geometry);
+            feature.put("properties", properties);
             features.put(feature);
         }
 
         geoJson.put("features", features);
 
-        try
+        // Improved file writing (auto-closes FileWriter)
+        try (FileWriter fw = new FileWriter(new File(filePath)))
         {
-            File file = new File(filePath);
-            FileWriter fw = new FileWriter(file);
-            fw.write(geoJson.toString(4));
-            fw.close();
+            fw.write(geoJson.toString(4)); // Pretty-print with indentation
         }
-        catch(IOException e)
+        catch (IOException e)
         {
             e.printStackTrace();
         }
     }
 
-    public List<Location> getRoute(){
+    public List<Location> getRoute() {
         return this.finalRoute;
     }
 }

@@ -4,21 +4,24 @@ import com.google.protobuf.Duration;
 import com.google.ortools.Loader;
 import com.google.ortools.constraintsolver.*;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class VehicleRouter {
     private final int[][] distanceMatrix;
     private final int num_vehicles;
+    private final List<Location> locations;
 
     public VehicleRouter(List<Location> locations, graphHopperInitializer initializer, int num_vehicles, boolean[] options) {
         this.num_vehicles = num_vehicles;
-
+        this.locations = locations;
         // Use the PrecomputedDistance class
         PrecomputedDistance distances = new PrecomputedDistance(locations, initializer, options);
         this.distanceMatrix = distances.distanceMatrix;
     }
 
-    public void solveTSP(int timeLimit) {
+    public void solveTSP(int timeLimit, String outputFileName) {
         Loader.loadNativeLibraries(); // Load OR-Tools
         int numLocations = distanceMatrix.length;
         //System.out.println("Solving for " + numLocations + " locations with " + num_vehicles + " vehicles");
@@ -61,22 +64,34 @@ public class VehicleRouter {
 
         // Print solut  ion
         if (solution != null) {
-            // Print routes
-            for (int i = 0; i < num_vehicles; i++) {
-                System.out.print("Route for Vehicle " + (i) + ": ");
-                long index = routing.start(i);
-                StringBuilder route = new StringBuilder();
+            List<Location> finalRoute = new ArrayList<>();
+            for (int vehicle = 0; vehicle < num_vehicles; vehicle++) {
+                System.out.print("Route for Vehicle " + vehicle + ": ");
+                long index = routing.start(vehicle);
+                StringBuilder routeStr = new StringBuilder();
+                boolean firstNode = true; // flag for depot (first node)
+
                 while (!routing.isEnd(index)) {
                     int routeIndex = manager.indexToNode((int) index);
-                    route.append(routeIndex+1).append(" -> ");
+                    // Get the original location from your list
+                    Location originalLocation = locations.get(routeIndex);
+                    // Create a new Location instance (to avoid modifying the shared object)
+                    Location loc = new Location(originalLocation.getLat(), originalLocation.getLon(), originalLocation.id);
+
+                    loc.clusterid = vehicle;
+
+                    finalRoute.add(loc);
+                    routeStr.append(routeIndex + 1).append(" -> ");
                     index = solution.value(routing.nextVar(index));
                 }
-                int finalIndex = manager.indexToNode((int) index);
-                route.append(finalIndex + 1);
-                System.out.println(route);
             }
-        }
-        else {
+            try {
+                new Route(finalRoute, outputFileName);
+                System.out.println("GeoJSON route output written to " + outputFileName);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
             System.out.println("No solution found!");
         }
     }
