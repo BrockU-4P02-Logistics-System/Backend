@@ -14,14 +14,8 @@ public class GAHarness {
     public GAHarness(int numberDrivers) throws IOException
     {
         Reader newReader = new Reader("src/main/java/org/example/input.txt");
-
-        GraphHopper hopper;
-        hopper = new GraphHopper();
-        hopper.setOSMFile("ontario.osm.pbf");
-        hopper.setGraphHopperLocation("graph-cache");
-        hopper.setProfiles(new Profile("car").setVehicle("car").setWeighting("fastest"));
-        hopper.getCHPreparationHandler().setCHProfiles(new CHProfile("car"));
-        hopper.importOrLoad();
+        boolean[] options = {false, false, false, false, false};
+        graphHopperInitializer initializer = new graphHopperInitializer(options);
 
         //testJavaML ml = new testJavaML();
         //ml.cluster(numberDrivers,10000,newReader.locations,hopper);
@@ -43,7 +37,7 @@ public class GAHarness {
             {
                 GeneticAlgorithm2 ga = new GeneticAlgorithm2(100, 0.75, 0.2, 3,
                         clusteriLocations.size() * clusteriLocations.size() + 10, 3, 42,
-                        clusteriLocations);
+                        clusteriLocations, initializer);
                 Individual bestIndividual = ga.mainLoop();
                 Route r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt");
                 ga.printPopulation();

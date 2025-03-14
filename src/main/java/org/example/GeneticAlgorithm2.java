@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class GeneticAlgorithm2 {
-    GraphHopper hopper;
+    graphHopperInitializer initializer;
     ConcurrentHashMap<String, Long> cache;
     List<Individual> population;
     List<Double> populationMin;
@@ -199,7 +199,7 @@ public class GeneticAlgorithm2 {
         double total = 0;
         double min = Double.MAX_VALUE;
         for (int i=0; i<populationSize; i++){
-            total += population.get(i).calculateFitness(cache, hopper);
+            total += population.get(i).calculateFitness(cache, initializer);
             if (population.get(i).getFitness() < min){
                 min = population.get(i).getFitness();
             }
@@ -323,16 +323,9 @@ public class GeneticAlgorithm2 {
         }
     }
 
-    public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int eliteSize, int seed, List<Location> locations){
+    public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int eliteSize, int seed, List<Location> locations, graphHopperInitializer initializer){
         this.cache = new ConcurrentHashMap<>();
-
-        hopper = new GraphHopper();
-        hopper.setOSMFile("ontario.osm.pbf");
-        hopper.setGraphHopperLocation("graph-cache");
-        hopper.setProfiles(new Profile("car").setVehicle("car").setWeighting("fastest"));
-        hopper.getCHPreparationHandler().setCHProfiles(new CHProfile("car"));
-        hopper.importOrLoad();
-
+        this.initializer = initializer;
         this.numberIterations = iterations;
         this.crossoverRate = crossoverRate;
         this.mutationRate = mutationRate;

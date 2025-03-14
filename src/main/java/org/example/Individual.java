@@ -14,7 +14,7 @@ public class Individual {
         this.route = route;
         this.fitness = Double.MAX_VALUE;
     }
-    public double calculateFitness(ConcurrentHashMap<String, Long> cache, GraphHopper hopper)
+    public double calculateFitness(ConcurrentHashMap<String, Long> cache, graphHopperInitializer initializer)
     {
         //Calculate the fitness of the individual
         double time = 0;
@@ -27,9 +27,10 @@ public class Individual {
             }
             else
             {
-                GHRequest req = new GHRequest(route.get(i).getLat(), route.get(i).getLon(), route.get(i+1).getLat(), route.get(i+1).getLon());
-                req.setProfile("car");
-                GHResponse res = hopper.route(req);
+                GHRequest req = new GHRequest(route.get(i).getLat(), route.get(i).getLon(), route.get(i+1).getLat(), route.get(i+1).getLon())
+                        .setProfile(initializer.generateProfileName(initializer.options))
+                        .putHint("custom_model", graphHopperInitializer.getCustomModel(initializer.options));
+                GHResponse res = initializer.getHopper().route(req);
                 ResponsePath path = res.getBest();
                 time += path.getTime() / 60000;
                 cache.put(key, path.getTime() / 60000);

@@ -8,25 +8,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MultiTSPTester {
-    private final GraphHopper hopper;
+    private final graphHopperInitializer initializer;
     private final List<Location> locations;
     private final int numVehicles;
+    public boolean[] options;
 
-    public MultiTSPTester(int numVehicles, List<Location> locations) {
+    public MultiTSPTester(int numVehicles, List<Location> locations, boolean[] options) {
         this.numVehicles = numVehicles;
         this.locations = locations;
+        initializer = new graphHopperInitializer(options);
+        this.options = options;
 
-        // Initialize GraphHopper
-        hopper = new GraphHopper();
-        hopper.setOSMFile("ontario.osm.pbf");
-        hopper.setGraphHopperLocation("graph-cache");
-        hopper.setProfiles(new Profile("car").setVehicle("car").setWeighting("fastest"));
-        hopper.getCHPreparationHandler().setCHProfiles(new CHProfile("car"));
-        hopper.importOrLoad();
     }
 
     public void solveRoutingProblem(int timeLimit) {
-        VehicleRouter router = new VehicleRouter(locations, hopper, numVehicles);
+        VehicleRouter router = new VehicleRouter(locations, initializer, numVehicles, options);
         router.solveTSP(timeLimit);
     }
 
@@ -79,10 +75,9 @@ public class MultiTSPTester {
         locations.add(new Location(44.372990, -79.673123, 39)); // Alva Street
         locations.add(new Location(44.371901, -79.672234, 40)); // Ambler Bay
         locations.add(new Location(44.370912, -79.671345, 41)); // Amelia Street
-
-        MultiTSPTester tester = new MultiTSPTester(2, locations);
-        long startTime = System.currentTimeMillis();
+        //Highways, Tolls, Unpaved, Ferries, Tunnels
+        boolean[] options = {true, true, true, true, true};
+        MultiTSPTester tester = new MultiTSPTester(2, locations, options);
         tester.solveRoutingProblem(20);
-        System.out.println(System.currentTimeMillis() - startTime + " ms");
     }
 }

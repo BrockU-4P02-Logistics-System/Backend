@@ -1,29 +1,25 @@
 package org.example;
 
 import com.google.protobuf.Duration;
-import com.graphhopper.GraphHopper;
 import com.google.ortools.Loader;
 import com.google.ortools.constraintsolver.*;
 
 import java.util.List;
 
 public class VehicleRouter {
-    private final List<Location> locations;
     private final int[][] distanceMatrix;
     private final int num_vehicles;
 
-    public VehicleRouter(List<Location> locations, GraphHopper hopper, int num_vehicles) {
-        this.locations = locations;
+    public VehicleRouter(List<Location> locations, graphHopperInitializer initializer, int num_vehicles, boolean[] options) {
         this.num_vehicles = num_vehicles;
 
         // Use the PrecomputedDistance class
-        PrecomputedDistance distances = new PrecomputedDistance(locations, hopper);
+        PrecomputedDistance distances = new PrecomputedDistance(locations, initializer, options);
         this.distanceMatrix = distances.distanceMatrix;
     }
 
     public void solveTSP(int timeLimit) {
         Loader.loadNativeLibraries(); // Load OR-Tools
-
         int numLocations = distanceMatrix.length;
         System.out.println("Solving for " + numLocations + " locations with " + num_vehicles + " vehicles");
 
@@ -34,13 +30,17 @@ public class VehicleRouter {
         // Create routing model
         RoutingModel routing = new RoutingModel(manager);
 
-        // Create and register a transit callback
-        final int transitCallbackIndex = routing.registerTransitCallback((long fromIndex, long toIndex) -> {
-            // Convert from routing variable Index to user NodeIndex
-            int fromNode = manager.indexToNode((int) fromIndex);
-            int toNode = manager.indexToNode((int) toIndex);
-            return distanceMatrix[fromNode][toNode];
-        });
+        long[][] lookupDistanceMatrix = new long[numLocations][numLocations];
+        for (int i = 0; i < numLocations; i++) {
+            for (int j = 0; j < numLocations; j++) {
+                lookupDistanceMatrix[i][j] = distanceMatrix[i][j];
+            }
+        }
+
+        final int transitCallbackIndex = routing.registerTransitCallback((fromIndex, toIndex) ->
+                lookupDistanceMatrix[manager.indexToNode((int) fromIndex)][manager.indexToNode((int) toIndex)]
+        );
+
 
         // Define cost of each arc
         routing.setArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
@@ -49,15 +49,13 @@ public class VehicleRouter {
         routing.addDimension(transitCallbackIndex, 0, 10000000, true, "Distance");
         RoutingDimension distanceDimension = routing.getMutableDimension("Distance");
         distanceDimension.setGlobalSpanCostCoefficient(100);
-
         // Setting first solution heuristic
         RoutingSearchParameters searchParameters =
                 main.defaultRoutingSearchParameters()
                         .toBuilder()
-                        .setFirstSolutionStrategy(FirstSolutionStrategy.Value.PATH_CHEAPEST_ARC)
+                        .setFirstSolutionStrategy(FirstSolutionStrategy.Value.CHRISTOFIDES)
                         .setTimeLimit(Duration.newBuilder().setSeconds(timeLimit).build())
                         .build();
-
         // Solve the problem
         Assignment solution = routing.solveWithParameters(searchParameters);
 
