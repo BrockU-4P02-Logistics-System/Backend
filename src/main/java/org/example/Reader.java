@@ -53,8 +53,6 @@ public class Reader {
                     this.locations.add(location);
                 }
             }
-
-            System.out.println(this.numberDrivers);
         }
         catch (IOException e)
         {

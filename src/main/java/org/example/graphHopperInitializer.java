@@ -58,7 +58,6 @@ public class graphHopperInitializer {
         this.hoppers = new ArrayList<>();
         this.options = options;
         profileNames = new ArrayList<>();
-
         // Generate the profile name based on the provided options
         String profileName = generateProfileName(options);
         profileNames.add(profileName);

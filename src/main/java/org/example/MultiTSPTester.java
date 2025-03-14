@@ -23,7 +23,7 @@ public class MultiTSPTester {
 
     public void solveRoutingProblem(int timeLimit) {
         VehicleRouter router = new VehicleRouter(locations, initializer, numVehicles, options);
-        router.solveTSP(timeLimit);
+        //router.solveTSP(timeLimit);
     }
 
     public static void main(String[] args) {
