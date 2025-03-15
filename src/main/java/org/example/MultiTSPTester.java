@@ -16,14 +16,16 @@ public class MultiTSPTester {
     public MultiTSPTester(int numVehicles, List<Location> locations, boolean[] options) {
         this.numVehicles = numVehicles;
         this.locations = locations;
-        initializer = new graphHopperInitializer(options);
+        graphHopperInitializer init = new graphHopperInitializer();
+        init = new graphHopperInitializer(options);
+        this.initializer = init;
         this.options = options;
 
     }
 
     public void solveRoutingProblem(int timeLimit) {
         VehicleRouter router = new VehicleRouter(locations, initializer, numVehicles, options);
-        //router.solveTSP(timeLimit);
+        router.solveTSP(timeLimit, "src/main/java/org/example/output2.txt");
     }
 
     public static void main(String[] args) {
@@ -76,7 +78,7 @@ public class MultiTSPTester {
         locations.add(new Location(44.371901, -79.672234, 40)); // Ambler Bay
         locations.add(new Location(44.370912, -79.671345, 41)); // Amelia Street
         //Highways, Tolls, Unpaved, Ferries, Tunnels
-        boolean[] options = {true, true, true, true, true};
+        boolean[] options = {false, true, true, true, true};
         MultiTSPTester tester = new MultiTSPTester(2, locations, options);
         tester.solveRoutingProblem(20);
     }
