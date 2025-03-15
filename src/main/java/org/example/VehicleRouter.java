@@ -21,8 +21,7 @@ public class VehicleRouter {
         this.distanceMatrix = distances.distanceMatrix;
     }
 
-    public void solveTSP(int timeLimit, String outputFileName) {
-        Loader.loadNativeLibraries(); // Load OR-Tools
+    public Route solveTSP(int timeLimit, String outputFileName) {
         int numLocations = distanceMatrix.length;
         //System.out.println("Solving for " + numLocations + " locations with " + num_vehicles + " vehicles");
 
@@ -86,13 +85,15 @@ public class VehicleRouter {
                 }
             }
             try {
-                new Route(finalRoute, outputFileName);
+                Route r = new Route(finalRoute, outputFileName);
                 System.out.println("GeoJSON route output written to " + outputFileName);
+                return r;
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             System.out.println("No solution found!");
         }
+        return null;
     }
 }
