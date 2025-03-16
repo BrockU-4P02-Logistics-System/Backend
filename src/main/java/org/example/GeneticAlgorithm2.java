@@ -31,11 +31,13 @@ public class GeneticAlgorithm2 {
     int[] generation;
     Individual[] elite;
     int eliteSize;
-    int numberDrivers;
+    boolean returnToStart;
 
-    public List<Individual> initializePopulation(int size){
+    public List<Individual> initializePopulation(int size)
+    {
         List<Individual> pop = new ArrayList<>(size);
-        for (int i=0; i<size; i++){
+        for (int i=0; i<size; i++)
+        {
             int index = 0;
             List<Location> route = new ArrayList<>(this.locations);
             Collections.shuffle(route, this.randomGen);
@@ -44,7 +46,7 @@ public class GeneticAlgorithm2 {
                 index = findIDOne(route);
             }
             Collections.swap(route,0,index);
-            pop.add(new Individual(route));
+            pop.add(new Individual(route, returnToStart));
         }
         return pop;
     }
@@ -61,9 +63,11 @@ public class GeneticAlgorithm2 {
         return 0;
     }
 
-    public List<Individual> tournamentSelection(int k){
+    public List<Individual> tournamentSelection(int k)
+    {
         List<Individual> newPop = new ArrayList<>(populationSize);
-        for (int i=0; i<populationSize; i++){
+        for (int i=0; i<populationSize; i++)
+        {
             newPop.add(tournamentProbability(k, this.selectionPressure));
         }
         return newPop;
@@ -111,9 +115,11 @@ public class GeneticAlgorithm2 {
         return unordered;
     }
 
-    public Individual tournament(int k){
+    public Individual tournament(int k)
+    {
         List<Individual> tournament = new ArrayList<>(k);
-        for (int i=0; i<k; i++){
+        for (int i=0; i<k; i++)
+        {
             int index = (int) (this.randomGen.nextDouble() * this.population.size());
             tournament.add(this.population.get(index));
         }
@@ -191,7 +197,7 @@ public class GeneticAlgorithm2 {
                 }
             }
         }
-        return new Individual(child1);
+        return new Individual(child1, returnToStart);
     }
 
 
@@ -238,7 +244,7 @@ public class GeneticAlgorithm2 {
             }
             Collections.swap(newRoute, i1, i2);
         }
-        return new Individual(newRoute);
+        return new Individual(newRoute, returnToStart);
     }
 
     public Individual mainLoop(){
@@ -254,8 +260,10 @@ public class GeneticAlgorithm2 {
             this.population = mutatePopulation(this.population);
         }
         evaluatePopulation();
-        System.out.println("Iteration: " + numberIterations + " Min: " + this.populationMin.get(numberIterations) + " Average: " + this.populationAverage.get(numberIterations));
 
+        // Output and Graphing capabilities below
+
+        //System.out.println("Iteration: " + numberIterations + " Min: " + this.populationMin.get(numberIterations) + " Average: " + this.populationAverage.get(numberIterations));
         //graphing();
 
         return this.bestIndividual;
@@ -323,7 +331,7 @@ public class GeneticAlgorithm2 {
         }
     }
 
-    public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int eliteSize, int seed, List<Location> locations, graphHopperInitializer initializer){
+    public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int eliteSize, int seed, List<Location> locations, graphHopperInitializer initializer, boolean returnToStart){
         this.cache = new ConcurrentHashMap<>();
         this.initializer = initializer;
         this.numberIterations = iterations;
@@ -339,6 +347,7 @@ public class GeneticAlgorithm2 {
         generation = new int[numberIterations+1];
         this.eliteSize = eliteSize;
         this.elite = null;
+        this.returnToStart = returnToStart;
     }
 
 }
