@@ -21,7 +21,7 @@ public class VehicleRouter {
         this.distanceMatrix = distances.distanceMatrix;
     }
 
-    public Route solveTSP(int timeLimit, String outputFileName) {
+    public Route solveTSP(int timeLimit, String outputFileName, boolean returnToStart) {
         int numLocations = distanceMatrix.length;
         //System.out.println("Solving for " + numLocations + " locations with " + num_vehicles + " vehicles");
 
@@ -63,12 +63,13 @@ public class VehicleRouter {
 
         // Print solut  ion
         if (solution != null) {
+            // Form this route based on google or tools
             List<Location> finalRoute = new ArrayList<>();
+
             for (int vehicle = 0; vehicle < num_vehicles; vehicle++) {
-                System.out.print("Route for Vehicle " + vehicle + ": ");
+                // System.out.print("Route for Vehicle " + vehicle + ": ");
                 long index = routing.start(vehicle);
                 StringBuilder routeStr = new StringBuilder();
-                boolean firstNode = true; // flag for depot (first node)
 
                 while (!routing.isEnd(index)) {
                     int routeIndex = manager.indexToNode((int) index);
@@ -83,9 +84,17 @@ public class VehicleRouter {
                     routeStr.append(routeIndex + 1).append(" -> ");
                     index = solution.value(routing.nextVar(index));
                 }
+
+                if(returnToStart) // Add the starting location to end of drivers route for all drivers
+                {
+                    Location loc = new Location(locations.get(0).getLat(), locations.get(0).getLon(), locations.get(0).id);
+                    loc.clusterid = vehicle;
+                    finalRoute.add(loc);
+                }
+
             }
             try {
-                Route r = new Route(finalRoute, outputFileName);
+                Route r = new Route(finalRoute, outputFileName, false); // Always pass false to Route, the logic for returning to the start is in the previous loop
                 System.out.println("GeoJSON route output written to " + outputFileName);
                 return r;
             } catch (IOException e) {

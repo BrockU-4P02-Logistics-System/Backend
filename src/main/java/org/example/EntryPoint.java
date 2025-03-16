@@ -16,10 +16,10 @@ public class EntryPoint {
                     locations.size() * locations.size() + 10, 3, 42,
                     locations, initializer, returnToStart);
             Individual bestIndividual = ga.mainLoop();
-            Route r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt");
+            Route r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt", returnToStart);
         } else {
             VehicleRouter vr = new VehicleRouter(locations, initializer, num_vehicles, options);
-            Route r = vr.solveTSP(20, "src/main/java/org/example/output.txt"); //could be null if no solution found
+            Route r = vr.solveTSP(20, "src/main/java/org/example/output.txt", returnToStart); //could be null if no solution found
         }
     }
     public static void main(String[] args) throws IOException
