@@ -15,7 +15,15 @@ public class Reader {
 
     public List<Location> locations;
     public int numberDrivers;
+
     public boolean returnToStart;
+    public boolean avoidHighways;
+    public boolean avoidTolls;
+    public boolean avoidUnpavedRoads;
+    public boolean avoidFerries;
+    public boolean avoidTracks;
+
+    public boolean[] flags;
 
     public Reader(String filePath) throws IOException
     {
@@ -23,11 +31,25 @@ public class Reader {
         {
             this.locations = new ArrayList<>();
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
+            this.flags = new boolean[5]; // Avoid highways, avoid tolls, avoid unpaved roads, avoid ferries, avoid tracks
 
             JSONObject geoJson = new JSONObject(content);
 
-            this.numberDrivers = geoJson.optInt("total_drivers", 1); // Default to 0 if missing
-            this.returnToStart = geoJson.optBoolean("return_to_start", true); // Default to false
+            this.numberDrivers = geoJson.optInt("total_drivers", 1); // Default to 1 if missing
+            this.returnToStart = geoJson.optBoolean("return_to_start", true); // Default true
+
+            // These are the flags being set in graph hopper
+            this.avoidHighways = geoJson.optBoolean("avoid_highways", false); // Default false
+            this.avoidTolls = geoJson.optBoolean("avoid_tolls", false); // Default false
+            this.avoidUnpavedRoads = geoJson.optBoolean("avoid_unpaved_roads", false); // Default false
+            this.avoidFerries = geoJson.optBoolean("avoid_ferries", false); // Default false
+            this.avoidTracks = geoJson.optBoolean("avoid_tracks", false); // Default false
+
+            this.flags[0] = this.avoidHighways;
+            this.flags[1] = this.avoidTolls;
+            this.flags[2] = this.avoidUnpavedRoads;
+            this.flags[3] = this.avoidFerries;
+            this.flags[4] = this.avoidTracks;
 
             JSONArray features = geoJson.getJSONArray("features");
 

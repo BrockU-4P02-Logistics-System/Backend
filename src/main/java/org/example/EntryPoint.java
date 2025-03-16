@@ -1,7 +1,6 @@
 package org.example;
 
 import com.google.ortools.Loader;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -26,9 +25,13 @@ public class EntryPoint {
     public static void main(String[] args) throws IOException { // Example usage
         EntryPoint ep = new EntryPoint();
         Reader inputReader = new Reader("src/main/java/org/example/input.txt");
-        boolean[] options = {false, false, false, false, false}; // Avoid highways, avoid tolls, avoid unpaved roads, avoid ferries, avoid tracks
+
+        // Transfer reader data
+        boolean[] options = inputReader.flags; // Avoid highways, avoid tolls, avoid unpaved roads, avoid ferries, avoid tracks
         int num_vehicles = inputReader.numberDrivers;
         List<Location> locations = inputReader.locations;
+
+        // solve problem
         ep.spawnWorker(locations, options, num_vehicles);
         //ep.spawnWorker(locations, new boolean[]{true, false, false, false, false}, num_vehicles); //Just did this as a test. It's like instant after the first one
     }
