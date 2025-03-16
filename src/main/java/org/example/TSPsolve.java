@@ -19,7 +19,7 @@ public class TSPsolve
         graphHopperInitializer initializer = new graphHopperInitializer();
         initializer = new graphHopperInitializer(options);
         VehicleRouter vr = new VehicleRouter(inputReader.locations, initializer, this.numberDrivers, options);
-        vr.solveTSP(20, "src/main/java/org/example/output.txt");
+        vr.solveTSP(20, "src/main/java/org/example/output.txt",false);
     }
 
     public static void main (String [] args) throws IOException {

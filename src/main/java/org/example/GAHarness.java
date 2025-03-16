@@ -37,9 +37,9 @@ public class GAHarness {
             {
                 GeneticAlgorithm2 ga = new GeneticAlgorithm2(100, 0.75, 0.2, 3,
                         clusteriLocations.size() * clusteriLocations.size() + 10, 3, 42,
-                        clusteriLocations, initializer);
+                        clusteriLocations, initializer, false);
                 Individual bestIndividual = ga.mainLoop();
-                Route r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt");
+                Route r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt", false);
                 ga.printPopulation();
             }
         }
