@@ -18,5 +18,5 @@ dependencies {
 }
 
 tasks.named<JavaExec>("run") {
-    mainClass.set("org.example.RoutingExample")
+    mainClass.set("org.example.EntryPoint")
 }
