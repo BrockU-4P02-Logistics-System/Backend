@@ -31,7 +31,7 @@ public class PrecomputedDistance {
                 .putHint("custom_model", graphHopperInitializer.getCustomModel(options));
         GHResponse res = initializer.getHopper().route(req);
         ResponsePath path = res.getBest();
-        return (int) path.getTime();
+        return (int) (path.getTime()/6000);
     }
 
 }
