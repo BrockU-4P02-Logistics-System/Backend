@@ -1,10 +1,7 @@
 package org.example;
 
-import com.fasterxml.jackson.databind.jsonFormatVisitors.JsonIntegerFormatVisitor;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -31,7 +28,7 @@ public class Reader {
         {
             this.locations = new ArrayList<>();
             String content = new String(Files.readAllBytes(Paths.get(filePath)));
-            this.flags = new boolean[5]; // Avoid highways, avoid tolls, avoid unpaved roads, avoid ferries, avoid tracks
+            this.flags = new boolean[3]; // Avoid highways, avoid tolls, avoid unpaved roads, avoid ferries, avoid tracks
 
             JSONObject geoJson = new JSONObject(content);
 
@@ -41,15 +38,11 @@ public class Reader {
             // These are the flags being set in graph hopper
             this.avoidHighways = geoJson.optBoolean("avoid_highways", false); // Default false
             this.avoidTolls = geoJson.optBoolean("avoid_tolls", false); // Default false
-            this.avoidUnpavedRoads = geoJson.optBoolean("avoid_unpaved_roads", false); // Default false
             this.avoidFerries = geoJson.optBoolean("avoid_ferries", false); // Default false
-            this.avoidTracks = geoJson.optBoolean("avoid_tracks", false); // Default false
 
             this.flags[0] = this.avoidHighways;
             this.flags[1] = this.avoidTolls;
-            this.flags[2] = this.avoidUnpavedRoads;
-            this.flags[3] = this.avoidFerries;
-            this.flags[4] = this.avoidTracks;
+            this.flags[2] = this.avoidFerries;
 
             JSONArray features = geoJson.getJSONArray("features");
 

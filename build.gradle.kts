@@ -19,4 +19,5 @@ dependencies {
 
 tasks.named<JavaExec>("run") {
     mainClass.set("org.example.EntryPoint")
+    jvmArgs = listOf("-Xmx30g")
 }

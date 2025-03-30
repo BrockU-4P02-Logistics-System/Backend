@@ -35,7 +35,7 @@ public class graphHopperInitializer {
         if (hopper == null) {
             // Create a single GraphHopper instance
             hopper = new GraphHopper();
-            hopper.setOSMFile("ontario-latest.osm.pbf");
+            hopper.setOSMFile("north-america-latest.osm.pbf");
             // All data will be saved into 'graph-cache/'
             hopper.setGraphHopperLocation("graph-cache");
             hopper.setEncodedValuesString("road_class,road_environment,toll");
@@ -44,9 +44,9 @@ public class graphHopperInitializer {
             List<Profile> profiles = new ArrayList<>();
             List<CHProfile> chProfiles = new ArrayList<>();
 
-            // Generate all 32 permutations
-            for (int i = 0; i < 32; i++) {
-                boolean[] opts = intToBooleanArray(i, 5);
+            // Generate all 8 permutations
+            for (int i = 0; i < 8; i++) {
+                boolean[] opts = intToBooleanArray(i, 3);
                 String profileName = generateProfileName(opts);
                 ALL_PROFILE_NAMES.add(profileName);
 
@@ -74,7 +74,7 @@ public class graphHopperInitializer {
 
         // If no boolean[] given, default to [false,false,false,false,false]
         // or do whatever you want as a "no options" default
-        this.options = new boolean[] { false, false, false, false, false };
+        this.options = new boolean[] { false, false, false };
         this.selectedProfileName = generateProfileName(this.options);
     }
 
@@ -124,20 +124,9 @@ public class graphHopperInitializer {
         }
         if (options[2]) { // Avoid Unpaved Roads
             customModel.addToPriority(Statement.If(
-                    "road_class == TRACK",
-                    Statement.Op.MULTIPLY, "0.01"));
-        }
-        if (options[3]) { // Avoid Ferries
-            customModel.addToPriority(Statement.If(
                     "road_environment == FERRY",
                     Statement.Op.MULTIPLY, "0.01"));
         }
-        if (options[4]) { // Avoid Tunnels
-            customModel.addToPriority(Statement.If(
-                    "road_environment == TUNNEL",
-                    Statement.Op.MULTIPLY, "0.01"));
-        }
-
         return customModel;
     }
 
@@ -153,8 +142,6 @@ public class graphHopperInitializer {
         return "custom_car_" +
                 (options[0] ? "t" : "f") +
                 (options[1] ? "t" : "f") +
-                (options[2] ? "t" : "f") +
-                (options[3] ? "t" : "f") +
-                (options[4] ? "t" : "f");
+                (options[2] ? "t" : "f");
     }
 }

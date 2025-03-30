@@ -7,7 +7,9 @@ import java.util.List;
 public class EntryPoint {
     graphHopperInitializer initializer;
     public EntryPoint(){
+        System.gc();
         this.initializer = new graphHopperInitializer();
+        System.gc();
         Loader.loadNativeLibraries(); // Load OR-Tools
     }
     public void spawnWorker(List<Location> locations, boolean[] options, int num_vehicles, boolean returnToStart) throws IOException {

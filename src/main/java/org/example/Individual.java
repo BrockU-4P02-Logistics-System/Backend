@@ -38,9 +38,17 @@ public class Individual {
                             .setProfile(initializer.generateProfileName(initializer.options))
                             .putHint("custom_model", graphHopperInitializer.getCustomModel(initializer.options));
                     GHResponse res = initializer.getHopper().route(req);
-                    ResponsePath path = res.getBest();
-                    time += path.getTime() / 60000;
-                    cache.put(key, path.getTime() / 60000);
+                    if (res.hasErrors()) {
+
+                        time += calculateEuclideanDistanceTime(route.get(i % route.size()).getLat(), route.get(i % route.size()).getLon(), route.get((i+1) % route.size()).getLat(),
+                                route.get((i+1) % route.size()).getLon());
+                        cache.put(key, (long) time);
+                    }
+                    else {
+                        ResponsePath path = res.getBest();
+                        time += path.getTime() / 60000;
+                        cache.put(key, path.getTime() / 60000);
+                    }
                 }
             }
         }
@@ -61,15 +69,39 @@ public class Individual {
                             .setProfile(initializer.generateProfileName(initializer.options))
                             .putHint("custom_model", graphHopperInitializer.getCustomModel(initializer.options));
                     GHResponse res = initializer.getHopper().route(req);
-                    ResponsePath path = res.getBest();
-                    time += path.getTime() / 60000;
-                    cache.put(key, path.getTime() / 60000);
+                    if (res.hasErrors()) {
+                        time += calculateEuclideanDistanceTime(route.get(i).getLat(), route.get(i).getLon(), route.get(i+1).getLat(), route.get(i+1).getLon());
+                        cache.put(key, (long) time);
+                    }
+                    else {
+                        ResponsePath path = res.getBest();
+                        time += path.getTime() / 60000;
+                        cache.put(key, path.getTime() / 60000);
+                    }
                 }
             }
         }
 
         this.fitness = time;
         return time;
+    }
+
+    private double calculateEuclideanDistanceTime(double lat1, double lon1, double lat2, double lon2) {
+        // Earth's radius in meters
+        final double R = 6371000;
+
+        double dLat = lat2 - lat1;
+        double dLon = lon2 - lon1;
+
+        double h = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1) * Math.cos(lat2) *
+                        Math.sin(dLon/2) * Math.sin(dLon/2);
+
+        double distance = 2 * R * Math.asin(Math.sqrt(h));
+
+        // Convert to an approximate time in seconds (assuming 50 km/h average speed)
+        // Then divide by 6000 as in your original code
+        return ((distance / (50 * 1000 / 3600)) / 600);
     }
 
     public double getFitness(){
