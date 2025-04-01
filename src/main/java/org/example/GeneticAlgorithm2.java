@@ -151,6 +151,14 @@ public class GeneticAlgorithm2 {
     }
 
     public Individual crossover(Individual parent1, Individual parent2) {
+        for(int i=0; i<parent1.route.size(); i++){
+            if(parent1.route.get(i).getID() != parent2.route.get(i).getID()){
+                break;
+            }
+            if(i == parent1.route.size()-1){
+                return new Individual(parent1.route, returnToStart);
+            }
+        }
         int s = parent1.route.size();
 
         // Create a child list pre-filled with nulls.
@@ -234,6 +242,9 @@ public class GeneticAlgorithm2 {
     }
 
     public Individual mutate(Individual individual){
+        if(individual.route.size() <= 2){
+            return individual;
+        }
         List<Location> newRoute = new ArrayList<>(individual.route);
         int s = newRoute.size();
         if (this.randomGen.nextDouble() < this.mutationRate){
