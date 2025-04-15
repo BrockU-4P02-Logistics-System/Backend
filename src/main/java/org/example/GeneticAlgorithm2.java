@@ -220,6 +220,7 @@ public class GeneticAlgorithm2 {
             if (bestIndividual == null || population.get(i).getFitness() < bestIndividual.getFitness()) {
                 bestIndividual = population.get(i);
             }
+
         }
         this.populationMin.add(min);
         this.populationAverage.add(total/populationSize);

@@ -1,6 +1,6 @@
 plugins {
     id("java")
-    id("application")
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 repositories {
@@ -14,10 +14,5 @@ dependencies {
     implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.32")
     implementation("org.json:json:20210307")
     implementation("org.knowm.xchart:xchart:3.8.0")
-
 }
 
-tasks.named<JavaExec>("run") {
-    mainClass.set("org.example.EntryPoint")
-    jvmArgs = listOf("-Xmx30g")
-}

@@ -6,16 +6,25 @@ import org.json.JSONObject;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.List;
+import java.util.*;
 
 public class Route
 {
 
     List<Location> finalRoute;
+    List<List<Location>> finalMultiRoute;
 
     Route(List<Location> route, String filePath, boolean returnToStart) throws IOException
     {
         this.finalRoute = route;
+
+        // Populate finalMultiRoute based on clusterid
+        Map<Integer, List<Location>> clusterMap = new HashMap<>();
+        for (Location loc : route)
+        {
+            clusterMap.computeIfAbsent(loc.clusterid, k -> new ArrayList<>()).add(loc);
+        }
+        this.finalMultiRoute = new ArrayList<>(clusterMap.values());
 
         JSONObject geoJson = new JSONObject();
         geoJson.put("type", "FeatureCollection");
@@ -91,5 +100,9 @@ public class Route
 
     public List<Location> getRoute() {
         return this.finalRoute;
+    }
+
+    public List<List<Location>> getFinalMultiRoute() {
+        return this.finalMultiRoute;
     }
 }

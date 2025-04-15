@@ -14,8 +14,10 @@ public class GAHarness {
     public GAHarness(int numberDrivers) throws IOException
     {
         Reader newReader = new Reader("src/main/java/org/example/input.txt");
-        boolean[] options = {false, false, false, false, false};
-        graphHopperInitializer initializer = new graphHopperInitializer(options);
+        boolean[] options = {false, false, false};
+
+        graphHopperInitializer initializer = new graphHopperInitializer();
+        initializer = new graphHopperInitializer(options);
 
         //testJavaML ml = new testJavaML();
         //ml.cluster(numberDrivers,10000,newReader.locations,hopper);
@@ -48,6 +50,6 @@ public class GAHarness {
 
 
     public static void main(String[] args) throws IOException {
-        GAHarness gah = new GAHarness(5);
+        GAHarness gah = new GAHarness(1);
     }
 }

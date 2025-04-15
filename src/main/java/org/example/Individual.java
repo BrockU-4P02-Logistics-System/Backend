@@ -17,74 +17,71 @@ public class Individual {
         this.returnToStart = returnToStart;
     }
 
-    public double calculateFitness(ConcurrentHashMap<String, Long> cache, graphHopperInitializer initializer)
-    {
+    public double calculateFitness(ConcurrentHashMap<String, Long> cache, graphHopperInitializer initializer) {
+        double totalTime = 0.0;
 
-        double time = 0;
+        if (this.returnToStart) {
+            int n = route.size();
+            for (int i = 0; i < n; i++) {
+                int nextIndex = (i + 1) % n;
+                String key = route.get(i).getID() + "-" + route.get(nextIndex).getID();
+                double segmentTime = 0.0;
 
-        if (this.returnToStart)
-        {
-            //Calculate the fitness of the individual, this is the case when the driver is returning, so add on extra segment
-            for(int i = 0; i < route.size(); i++)
-            {
-                String key = route.get(i % route.size()).getID() + "-" + route.get((i+1) % route.size()).getID();
-                if(cache.containsKey(key))
-                {
-                    time += cache.get(key);
-                }
-                else
-                {
-                    GHRequest req = new GHRequest(route.get(i % route.size()).getLat(), route.get(i % route.size()).getLon(), route.get((i+1) % route.size()).getLat(), route.get((i+1) % route.size()).getLon())
+                if (cache.containsKey(key)) {
+                    segmentTime = cache.get(key);
+                } else {
+                    GHRequest req = new GHRequest(
+                            route.get(i).getLat(), route.get(i).getLon(),
+                            route.get(nextIndex).getLat(), route.get(nextIndex).getLon())
                             .setProfile(initializer.generateProfileName(initializer.options))
                             .putHint("custom_model", graphHopperInitializer.getCustomModel(initializer.options));
                     GHResponse res = initializer.getHopper().route(req);
+
                     if (res.hasErrors()) {
-
-                        time += calculateEuclideanDistanceTime(route.get(i % route.size()).getLat(), route.get(i % route.size()).getLon(), route.get((i+1) % route.size()).getLat(),
-                                route.get((i+1) % route.size()).getLon());
-                        cache.put(key, (long) time);
-                    }
-                    else {
+                        segmentTime = calculateEuclideanDistanceTime(
+                                route.get(i).getLat(), route.get(i).getLon(),
+                                route.get(nextIndex).getLat(), route.get(nextIndex).getLon());
+                    } else {
                         ResponsePath path = res.getBest();
-                        time += path.getTime() / 60000;
-                        cache.put(key, path.getTime() / 60000);
+                        segmentTime = path.getTime() / 60000.0;
                     }
+                    cache.put(key, (long) segmentTime);
                 }
+                totalTime += segmentTime;
             }
-        }
-        else
-        {
+        } else {
+            for (int i = 0; i < route.size() - 1; i++) {
+                String key = route.get(i).getID() + "-" + route.get(i + 1).getID();
+                double segmentTime = 0.0;
 
-            //Calculate the fitness of the individual, no returning, so normal calculation
-            for(int i = 0; i < route.size() - 1; i++)
-            {
-                String key = route.get(i).getID() + "-" + route.get(i+1).getID();
-                if(cache.containsKey(key))
-                {
-                    time += cache.get(key);
-                }
-                else
-                {
-                    GHRequest req = new GHRequest(route.get(i).getLat(), route.get(i).getLon(), route.get(i+1).getLat(), route.get(i+1).getLon())
+                if (cache.containsKey(key)) {
+                    segmentTime = cache.get(key);
+                } else {
+                    GHRequest req = new GHRequest(
+                            route.get(i).getLat(), route.get(i).getLon(),
+                            route.get(i + 1).getLat(), route.get(i + 1).getLon())
                             .setProfile(initializer.generateProfileName(initializer.options))
                             .putHint("custom_model", graphHopperInitializer.getCustomModel(initializer.options));
                     GHResponse res = initializer.getHopper().route(req);
+
                     if (res.hasErrors()) {
-                        time += calculateEuclideanDistanceTime(route.get(i).getLat(), route.get(i).getLon(), route.get(i+1).getLat(), route.get(i+1).getLon());
-                        cache.put(key, (long) time);
-                    }
-                    else {
+                        segmentTime = calculateEuclideanDistanceTime(
+                                route.get(i).getLat(), route.get(i).getLon(),
+                                route.get(i + 1).getLat(), route.get(i + 1).getLon());
+                    } else {
                         ResponsePath path = res.getBest();
-                        time += path.getTime() / 60000;
-                        cache.put(key, path.getTime() / 60000);
+                        segmentTime = path.getTime() / 60000.0;
                     }
+                    cache.put(key, (long) segmentTime);
                 }
+                totalTime += segmentTime;
             }
         }
 
-        this.fitness = time;
-        return time;
+        this.fitness = totalTime;
+        return totalTime;
     }
+
 
     private double calculateEuclideanDistanceTime(double lat1, double lon1, double lat2, double lon2) {
         // Earth's radius in meters

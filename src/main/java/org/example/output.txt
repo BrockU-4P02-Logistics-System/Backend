@@ -3,8 +3,8 @@
         {
             "geometry": {
                 "coordinates": [
-                    -79.387054,
-                    43.642567
+                    -119.27201,
+                    50.2670137
                 ],
                 "type": "Point"
             },
@@ -17,239 +17,29 @@
         {
             "geometry": {
                 "coordinates": [
-                    -79.378134,
-                    43.620417
+                    -96.820939,
+                    49.545888
                 ],
                 "type": "Point"
             },
             "type": "Feature",
             "properties": {
                 "Driver-ID": 0,
-                "ID": 11
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.624819,
-                    43.677717
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 0,
-                "ID": 6
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.463706,
-                    43.646548
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 0,
-                "ID": 5
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.387054,
-                    43.642567
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 0,
-                "ID": 1
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.387054,
-                    43.642567
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 1
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.389353,
-                    43.641438
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 15
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.371713,
-                    43.649093
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 8
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.359533,
-                    43.650313
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 7
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.380188,
-                    43.656087
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 14
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.409445,
-                    43.678002
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 12
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.394777,
-                    43.66771
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
                 "ID": 2
             }
         },
         {
             "geometry": {
                 "coordinates": [
-                    -79.395656,
-                    43.662892
+                    -85.3232139,
+                    51.253775
                 ],
                 "type": "Point"
             },
             "type": "Feature",
             "properties": {
-                "Driver-ID": 1,
-                "ID": 4
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.392512,
-                    43.653606
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 10
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.384293,
-                    43.653908
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
+                "Driver-ID": 0,
                 "ID": 3
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.381936,
-                    43.65262
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 13
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.386345,
-                    43.642403
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 9
-            }
-        },
-        {
-            "geometry": {
-                "coordinates": [
-                    -79.387054,
-                    43.642567
-                ],
-                "type": "Point"
-            },
-            "type": "Feature",
-            "properties": {
-                "Driver-ID": 1,
-                "ID": 1
             }
         }
     ],

@@ -30,7 +30,6 @@ public class PrecomputedDistance {
                 else distanceMatrix[i][j] = computeDistance(locations.get(i), locations.get(j));
             }
         }
-        System.out.println("Precomputed distance matrix:");
     }
 
 
@@ -77,7 +76,7 @@ public class PrecomputedDistance {
 
         // Convert to an approximate time in seconds (assuming 50 km/h average speed)
         // Then divide by 6000 as in your original code
-        return (int) ((distance / (50 * 1000 / 3600)) / 60);
+        return (int) ((distance / (50 * 1000 / 3600)) / 6);
     }
 
 

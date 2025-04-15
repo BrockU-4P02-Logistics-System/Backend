@@ -80,8 +80,8 @@ public class MultiTSPTester {
         locations.add(new Location(44.372990, -79.673123, 39)); // Alva Street
         locations.add(new Location(44.371901, -79.672234, 40)); // Ambler Bay
         locations.add(new Location(44.370912, -79.671345, 41)); // Amelia Street
-        //Highways, Tolls, Unpaved, Ferries, Tunnels
-        boolean[] options = {false, true, true, true, true};
+        //Highways, Tolls, Ferries
+        boolean[] options = {false, false, false};
         MultiTSPTester tester = new MultiTSPTester(2, locations, options);
         tester.solveRoutingProblem(20);
     }

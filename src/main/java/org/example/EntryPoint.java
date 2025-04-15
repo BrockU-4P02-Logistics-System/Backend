@@ -12,17 +12,20 @@ public class EntryPoint {
         System.gc();
         Loader.loadNativeLibraries(); // Load OR-Tools
     }
-    public void spawnWorker(List<Location> locations, boolean[] options, int num_vehicles, boolean returnToStart) throws IOException {
+    public Route spawnWorker(List<Location> locations, boolean[] options, int num_vehicles, boolean returnToStart) throws IOException {
+        Route r;
         if (num_vehicles == 1){
             GeneticAlgorithm2 ga = new GeneticAlgorithm2(100, 0.75, 0.2, 3,
                     locations.size() * locations.size() + 10, 3, 42,
                     locations, initializer, returnToStart);
             Individual bestIndividual = ga.mainLoop();
-            Route r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt", returnToStart);
+            r = new Route(bestIndividual.getRoute(), "src/main/java/org/example/output.txt", returnToStart);
         } else {
             VehicleRouter vr = new VehicleRouter(locations, initializer, num_vehicles, options);
-            Route r = vr.solveTSP(20, "src/main/java/org/example/output.txt", returnToStart); //could be null if no solution found
+            r = vr.solveTSP(20, "src/main/java/org/example/output.txt", returnToStart); //could be null if no solution found
+            r.finalMultiRoute.removeIf(route -> route.size() == 1 || (returnToStart && route.size() == 2));
         }
+        return r;
     }
     public static void main(String[] args) throws IOException
     { // Example usage
@@ -36,7 +39,7 @@ public class EntryPoint {
         boolean returnToStart = inputReader.returnToStart;
 
         // solve problem
-        ep.spawnWorker(locations, options, num_vehicles, returnToStart);
+        Route r = ep.spawnWorker(locations, options, num_vehicles, returnToStart);
         //ep.spawnWorker(locations, new boolean[]{true, false, false, false, false}, num_vehicles); //Just did this as a test. It's like instant after the first one
     }
 

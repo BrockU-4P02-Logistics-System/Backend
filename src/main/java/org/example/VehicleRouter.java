@@ -27,11 +27,22 @@ public class VehicleRouter {
 
         // Create routing index manager
         // For a multiple vehicle routing problem with a depot
-        RoutingIndexManager manager = new RoutingIndexManager(numLocations, num_vehicles, 0);
+        int[] starts = new int[num_vehicles];
+        int[] ends = new int[num_vehicles];
+        for (int i = 0; i < num_vehicles; i++) {
+            starts[i] = 0;
+            // If returning to start, end at depot 0. Otherwise, the route is open;
+            // we still specify depot 0 as the endpoint, but later override its cost.
+            ends[i] = 0;
+        }
 
-        // Create routing model
+        // Create a RoutingIndexManager with as many start/end indices as vehicles.
+        RoutingIndexManager manager = new RoutingIndexManager(numLocations, num_vehicles, starts, ends);
+
+        // Create the RoutingModel.
         RoutingModel routing = new RoutingModel(manager);
 
+        // Copy your distance matrix into a lookup table.
         long[][] lookupDistanceMatrix = new long[numLocations][numLocations];
         for (int i = 0; i < numLocations; i++) {
             for (int j = 0; j < numLocations; j++) {
@@ -39,18 +50,33 @@ public class VehicleRouter {
             }
         }
 
-        final int transitCallbackIndex = routing.registerTransitCallback((fromIndex, toIndex) ->
-                lookupDistanceMatrix[manager.indexToNode((int) fromIndex)][manager.indexToNode((int) toIndex)]
-        );
+        // Register a transit callback.
+        // If returnToStart is false, we override the cost for the final leg (back to depot) to 0.
+        final int transitCallbackIndex = routing.registerTransitCallback((fromIndex, toIndex) -> {
+            int fromNode = manager.indexToNode(fromIndex);
+            int toNode = manager.indexToNode(toIndex);
+            // Check if this arc is the final leg back to the depot.
+            if (!returnToStart && toNode == 0 && fromNode != 0) {
+                // For open routes, ignore the cost of returning to the depot.
+                return 0L;
+            }
+            return lookupDistanceMatrix[fromNode][toNode];
+        });
 
-
-        // Define cost of each arc
+        // Define cost of each arc using the transit callback.
         routing.setArcCostEvaluatorOfAllVehicles(transitCallbackIndex);
 
-        // Add Distance constraint
-        routing.addDimension(transitCallbackIndex, 0, 10000000, true, "Distance");
+        // Add a distance dimension to constrain the distance.
+        // The capacity and slack are set arbitrarily high here (adjust as needed).
+        routing.addDimension(
+                transitCallbackIndex,  // transit callback
+                0,                     // no slack
+                1000000000,            // maximum distance per route
+                true,                  // start cumul at zero
+                "Distance"
+        );
         RoutingDimension distanceDimension = routing.getMutableDimension("Distance");
-        distanceDimension.setGlobalSpanCostCoefficient(100);
+        distanceDimension.setGlobalSpanCostCoefficient(1000);
         // Setting first solution heuristic
         RoutingSearchParameters searchParameters =
                 main.defaultRoutingSearchParameters()
@@ -94,6 +120,7 @@ public class VehicleRouter {
 
             }
             try {
+                System.out.println("Solution found!");
                 Route r = new Route(finalRoute, outputFileName, false); // Always pass false to Route, the logic for returning to the start is in the previous loop
                 System.out.println("GeoJSON route output written to " + outputFileName);
                 return r;
