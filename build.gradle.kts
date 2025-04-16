@@ -14,5 +14,11 @@ dependencies {
     implementation(group = "org.slf4j", name = "slf4j-simple", version = "1.7.32")
     implementation("org.json:json:20210307")
     implementation("org.knowm.xchart:xchart:3.8.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
+    testImplementation("junit:junit:4.13.1")
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
 
