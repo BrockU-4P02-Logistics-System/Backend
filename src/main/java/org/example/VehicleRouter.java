@@ -76,7 +76,7 @@ public class VehicleRouter {
                 "Distance"
         );
         RoutingDimension distanceDimension = routing.getMutableDimension("Distance");
-        distanceDimension.setGlobalSpanCostCoefficient(1000);
+        distanceDimension.setGlobalSpanCostCoefficient(200);
         // Setting first solution heuristic
         RoutingSearchParameters searchParameters =
                 main.defaultRoutingSearchParameters()

@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 public class GeneticAlgorithm2 {
     graphHopperInitializer initializer;
-    ConcurrentHashMap<String, Long> cache;
+    ConcurrentHashMap<String, Double> cache;
     List<Individual> population;
     List<Double> populationMin;
     List<Double> populationAverage;

@@ -7,7 +7,7 @@ import java.util.stream.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class GATesting {
+public class CrossoverTesting {
 
     // Utility method to create a list of Locations with ID starting from 1
     private List<Location> generateLocations(int count) {

@@ -17,7 +17,7 @@ public class Individual {
         this.returnToStart = returnToStart;
     }
 
-    public double calculateFitness(ConcurrentHashMap<String, Long> cache, graphHopperInitializer initializer) {
+    public double calculateFitness(ConcurrentHashMap<String, Double> cache, graphHopperInitializer initializer) {
         double totalTime = 0.0;
 
         if (this.returnToStart) {
@@ -45,7 +45,7 @@ public class Individual {
                         ResponsePath path = res.getBest();
                         segmentTime = path.getTime() / 60000.0;
                     }
-                    cache.put(key, (long) segmentTime);
+                    cache.put(key, segmentTime);
                 }
                 totalTime += segmentTime;
             }
@@ -72,7 +72,7 @@ public class Individual {
                         ResponsePath path = res.getBest();
                         segmentTime = path.getTime() / 60000.0;
                     }
-                    cache.put(key, (long) segmentTime);
+                    cache.put(key, segmentTime);
                 }
                 totalTime += segmentTime;
             }
@@ -97,8 +97,8 @@ public class Individual {
         double distance = 2 * R * Math.asin(Math.sqrt(h));
 
         // Convert to an approximate time in seconds (assuming 50 km/h average speed)
-        // Then divide by 6000 as in your original code
-        return ((distance / (50 * 1000 / 3600)) / 600);
+        // Then divide by 600
+        return ((distance / (50 * 1000 / 3600)) / 60);
     }
 
     public double getFitness(){
