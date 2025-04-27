@@ -346,7 +346,15 @@ public class GeneticAlgorithm2 {
     public GeneticAlgorithm2(int iterations, double crossoverRate, double mutationRate, int tournamentSize, int populationSize, int eliteSize, int seed, List<Location> locations, graphHopperInitializer initializer, boolean returnToStart){
         this.cache = new ConcurrentHashMap<>();
         this.initializer = initializer;
-        this.numberIterations = iterations;
+        if(locations.size() > 25){
+            this.numberIterations = iterations * 3;
+        }
+        else if(locations.size() > 10){
+            this.numberIterations = iterations * 2;
+        }
+        else{
+            this.numberIterations = iterations;
+        }
         this.crossoverRate = crossoverRate;
         this.mutationRate = mutationRate;
         this.tournamentSize = tournamentSize;
